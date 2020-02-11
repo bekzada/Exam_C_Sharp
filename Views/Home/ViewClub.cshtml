@@ -1,0 +1,59 @@
+@using FridayExam.Models;
+@using Microsoft.AspNetCore.Http;
+@model Club;
+
+<h1>@Model.Title</h1>
+@{
+    int? seshUser = Context.Session.GetInt32("ID");
+    if(Model.CoordinatorID == (int) seshUser)
+    {
+        
+        <a href ="/delete/@Model.ID"><button class = "btn btn-danger">Call it off!</button></a>
+    }
+    else
+    {
+        bool going = false;
+        foreach(var rsvp in Model.Participents)
+        {
+            if(rsvp.User.UserId == (int)seshUser)
+            {
+                going = true;
+            }
+        }
+        if(going)
+        {
+            <a href="/UnRsvp/@Model.ID"><button class="btn btn-danger">Leave Club</button></a>
+        }
+        else
+        {
+            if(TempData["Conflict"] == null)
+            {
+            <a href="/Rsvp/@Model.ID"><button class="btn btn-success">Join Club</button></a>
+            }
+            else
+            {
+                <div id="errors">You're already booked!</div>
+            }
+            
+        }
+        
+    }
+
+}
+<h2>ClubCoordinator:</h2>
+<p>@Model.Coordinator.FirstName</p>
+<h2>ClubDecription:</h2>
+<p>@Model.Description</p>
+<h2>Participants</h2>
+@{
+    foreach(var part in Model.Participents)
+    {
+        if(part.User.UserId != (int)seshUser)
+        {
+            <p>@part.User.FirstName</p>
+        }
+        
+    }
+}
+
+<a asp-action="Home" asp-controller="Home">Home</a>
